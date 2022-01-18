@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class Data {
+class ColorData {
 
-  MaterialColor white = const MaterialColor(
+  static MaterialColor white = const MaterialColor(
     0xFFFFFFFF,
     <int, Color>{
       50: Color(0xFFFFFFFF),

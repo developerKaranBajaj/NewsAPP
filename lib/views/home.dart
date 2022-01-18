@@ -20,78 +20,88 @@ class _HomeState extends State<Home> {
   // var categories = List<categoryModel?>.filled(10, null, growable: true);
   var categories = <CategoryModel>[];
   var articles = <ArticleModel>[];
-  bool _loading = true;
+  bool _loading = false;
 
   @override
   void initState() {
     super.initState();
     categories = getCategories();
-    // News _newsClass = News();
-    // _loadNews(_newsClass);
+    News _newsClass = News();
+    _loadNews(_newsClass);
   }
 
   _loadNews(News _newsClass) async {
-    _newsClass = News();
+    // _newsClass = News();
     await _newsClass.getNews();
     articles = _newsClass.news;
     setState(() {
-      _loading = false;
+      _loading = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Flutter"),
-            Text(
-              "News",
-              style: TextStyle(
-                color: Colors.blue,
-              ),
-            )
-          ],
+        appBar: AppBar(
+          elevation: 0.0,
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text("Flutter"),
+              Text(
+                "News",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      body: _loading
-          ? Column(
-              children: [
-                //Categories-------------------------
-                Container(
+        body: !_loading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
+              )
+            : SingleChildScrollView(
+              child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 70,
-                  child: ListView.builder(
-                    itemCount: categories.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return CategoryTitle(
-                          imageUrl: categories[index].imageUrl,
-                          categoryName: categories[index].categoryName);
-                    },
+                  child: Column(
+                    children: [
+                      //Categories-------------------------
+                      Container(
+                        height: 70,
+                        child: ListView.builder(
+                          itemCount: categories.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return CategoryTitle(
+                                imageUrl: categories[index].imageUrl,
+                                categoryName: categories[index].categoryName);
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: articles.length,
+                          physics: const ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return BlogTitle(
+                              imageUrl: articles[index].urlToImage,
+                              title: articles[index].title,
+                              desc: articles[index].description,
+                              url: articles[index].url,
+                            );
+                          },
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: articles.length,
-                    itemBuilder: (context, index) {
-                      return BlogTitle(
-                        imageUrl: articles[index].urlToImage,
-                        title: articles[index].title,
-                        desc: articles[index].description,
-                      );
-                    },
-                  ),
-                )
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
-    );
+            ));
   }
 }
